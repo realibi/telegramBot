@@ -30,4 +30,14 @@ abstract class Table{
     static function delete($where){
         return Database::instance()->delete(static::$table_name, $where);
     }
+
+    static function count($where=null){
+        return Database::instance()->count(static::$table_name, $where);
+    }
+
+    static function getById($id){
+        return self::get([
+            "id" => $id
+        ]);
+    }
 }

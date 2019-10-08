@@ -1,11 +1,17 @@
 <?php
 
+use Core\Telegram;
 use Telegram\Bot\Api;
+use Telegram\Bot\Methods\Update;
 
 class App{
     public function __construct()
     {
-        $t = new Api("741381921:AAE3odJ1p1yzepZVjykdR6s8HSQ-R24jXwg");
-        var_dump($t->getUpdates());
+        Telegram::eachUpdate(function (\Telegram\Bot\Objects\Update $update){
+           var_dump($update->getMessage());
+
+           echo "<br/>";
+           echo "<br/>";
+        });
     }
 }
