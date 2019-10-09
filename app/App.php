@@ -8,10 +8,10 @@ class App{
     public function __construct()
     {
         Telegram::eachUpdate(function (\Telegram\Bot\Objects\Update $update){
-           var_dump($update->getMessage());
+            $chat_id = $update->getMessage()["chat"]["id"];
+            $text = $update->getMessage()["text"];
 
-           echo "<br/>";
-           echo "<br/>";
+            Telegram::sendMessage($chat_id, $text);
         });
     }
 }
