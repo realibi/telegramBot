@@ -1,5 +1,7 @@
 <?php
 
+use Core\Helpers;
+
 sleep($argv[1]);
 
 $limit = 15 + $argv[1];

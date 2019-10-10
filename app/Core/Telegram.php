@@ -11,40 +11,25 @@ use Telegram\Bot\Objects\Update;
 class Telegram{
     private static $instance;
 
-    private function __construct()
+    private function __construct($cfg)
     {
-        self::$instance = new Api("741381921:AAE3odJ1p1yzepZVjykdR6s8HSQ-R24jXwg");
+        self::$instance = new Api($cfg["token"]);
 
-        self::$instance->addCommands([StartCommand::class, HelpCommand::class]);
+        if(isset($cfg["commands"]))
+            self::$instance->addCommands($cfg["commands"]);
     }
 
-    private static function init(){
+    static function init($cfg){
         if(!self::$instance instanceof Api)
-            new self();
+            new self($cfg);
     }
 
     static function getUpdates(array $params = [], $shouldEmitEvents = true){
-       self::init();
        return self::$instance->getUpdates($params, $shouldEmitEvents);
     }
 
-    static function eachUpdate(callable $callback){
-
-        $update_id = Updates::max("id");
-
-        foreach(self::getUpdates([
-            "offset" => $update_id + 1
-        ]) as $update){
-
-            self::$instance->commandsHandler(false);
-
-            Updates::insert([
-                "id" => $update["update_id"]
-            ]);
-
-            if($update->getMessage()["text"][0] != "/")
-                call_user_func($callback, $update);
-        }
+    static function handle(){
+        $updates = self::$instance->commandsHandler(false);
     }
 
     static function sendMessage($chat_id, $message){
@@ -52,5 +37,13 @@ class Telegram{
             "chat_id"=>$chat_id,
             "text"=>$message
         ]);
+    }
+
+    static function getLastUpdateId(){
+        return file_get_contents(Config::telegram("update_id_file"));
+    }
+
+    static function setLastUpdateId($id){
+        file_put_contents(Config::telegram("update_id_file"), $id);
     }
 }
